@@ -5,12 +5,15 @@ public class EntityFX : MonoBehaviour
 {
     private SpriteRenderer sr;
 
-    [Header("Flash Fix")]
+    [Header("弹反中材质")]
     [SerializeField] private Material hitMat;
-    [Header("Flash Time")]
+    [Header("弹反特效时间")]
     [SerializeField] private float flashTime;
     private Material originalMat;
-
+    [Header("异常状态颜色")]
+    [SerializeField] private Color[] chillColor;
+    [SerializeField] private Color[] igniteColor;
+    [SerializeField] private Color[] shockColor;
 
     private void Start()
     {
@@ -20,7 +23,11 @@ public class EntityFX : MonoBehaviour
     private IEnumerator FlashFX()
     {
         sr.material = hitMat;
+        Color  currentColor=sr.color;
+
+        sr.color = Color.white;
         yield return new WaitForSeconds(flashTime);
+        sr.color = currentColor;
         sr.material = originalMat;
     }
     private void RedColorBlink()
@@ -33,5 +40,59 @@ public class EntityFX : MonoBehaviour
     {
         CancelInvoke();
         sr.color = Color.white;
+    }
+    public void IgniteFxFor(float _seconds)//设置引燃的特效时间
+    {
+        InvokeRepeating(nameof(IgniteColorFx),0,0.3f);
+        Invoke(nameof(CancelColorBlink), _seconds);
+    }
+    public void ShockFxFor(float _seconds)//设置引燃的特效时间
+    {
+        InvokeRepeating(nameof(ShockColorFx),0,0.3f);
+        Invoke(nameof(CancelColorBlink), _seconds);
+    }
+    public void ChillFxFor(float _seconds)//设置冰冻的特效时间
+    {
+        InvokeRepeating(nameof(ChillColorFx), 0, 0.3f);
+        Invoke(nameof(CancelColorBlink), _seconds);
+    }
+    private void IgniteColorFx()
+    {
+        if (sr.color != igniteColor[0])
+        {
+            sr.color=igniteColor[0];
+        }
+        else
+        {
+            sr.color = igniteColor[1];
+        }
+    }
+
+    private void ChillColorFx()
+    {
+        Debug.Log(gameObject);
+        Debug.Log("chill blink");
+        if (sr.color != chillColor[0])
+        {
+            Debug.Log("1");
+            sr.color = chillColor[0];
+        }
+        else
+        {
+            Debug.Log("2");
+            sr.color = chillColor[1];
+        }
+    }
+
+    private void ShockColorFx()
+    {
+        if (sr.color != shockColor[0])
+        {
+            sr.color = shockColor[0];
+        }
+        else
+        {
+            sr.color = shockColor[1];
+        }
     }
 }

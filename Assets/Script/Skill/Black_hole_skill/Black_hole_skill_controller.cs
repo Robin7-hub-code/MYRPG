@@ -17,6 +17,8 @@ public class Black_hole_skill_controller : MonoBehaviour
     private bool canShrink;
     private float blackholeTimer;
 
+    private bool playerCanDisapear=true;
+
     private bool canAttack;
     private bool canCreateHotKey = true;
 
@@ -95,7 +97,12 @@ public class Black_hole_skill_controller : MonoBehaviour
         cloneAttackReleased = true;
         canCreateHotKey = false;
         Debug.Log("I m transparent");
-        PlayerManager.instance.player.MakeTransparent(true);
+
+        if(playerCanDisapear)
+        {
+          playerCanDisapear = false;
+          PlayerManager.instance.player.MakeTransparent(true);
+        }
     }
 
     private void CloneAttackLogic()

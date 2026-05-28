@@ -26,10 +26,20 @@ public class Entity : MonoBehaviour
     public CapsuleCollider2D cd { get; private set; }
     public int faceDir { get; private set; } = 1;
     protected bool facingRight = true;
+
+    public System.Action onFlipped;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Awake()
     {
         
+    }
+   public virtual void SlowEntity(float _slowPercentage,float _slowDuration)
+   {
+
+   }
+    public virtual void  ReturnDefaultSpeed()
+    {
+        anim.speed = 1;
     }
     protected virtual void Start()
     {
@@ -82,6 +92,8 @@ public class Entity : MonoBehaviour
         faceDir = faceDir * -1;
         facingRight = !facingRight;
         transform.Rotate(0, 180, 0);
+
+        onFlipped?.Invoke();
     }
     public virtual void FlipController(float _x)
     {
@@ -112,10 +124,12 @@ public class Entity : MonoBehaviour
     {
         if (transparent)
         {
+            Debug.Log("transparent");
             sr.color = Color.clear;
         }
         else
         {
+            Debug.Log("intransparent");
             sr.color = Color.white;
         }
     }

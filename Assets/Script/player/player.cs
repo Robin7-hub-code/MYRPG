@@ -5,9 +5,12 @@ public class Player : Entity
     [Header("Move info")]
     public float moveSpeed=7.0f;
     public float jumpForce;
+    private float defaultMoveSpeed;
+    private float defaultJumpForce;
     [Header("Dash info")]
     public float dashSpeed;
     public float dashDuration;
+    private float defaultDashSpeed;
     [Header("AttackDetails")]
     public Vector2 []attackMoveMent;
     public float counterAttackTime=0.1f;
@@ -48,6 +51,24 @@ public class Player : Entity
     public GameObject sword { get; private set; }
 
 
+    public override void SlowEntity(float _slowPercentage, float _slowDuration)
+    {
+        base.SlowEntity(_slowPercentage, _slowDuration);
+        moveSpeed = moveSpeed * (1 - _slowPercentage);
+        jumpForce= jumpForce * (1 - _slowPercentage);
+        dashSpeed= dashSpeed * (1 - _slowPercentage);
+        anim.speed = anim.speed*(1 - _slowPercentage);
+
+        Invoke(nameof(ReturnDefaultSpeed), _slowDuration);
+    }
+    public override void ReturnDefaultSpeed()
+    {
+        base.ReturnDefaultSpeed();
+        moveSpeed = defaultMoveSpeed;
+        jumpForce = defaultJumpForce;
+        dashSpeed = defaultDashSpeed;
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -71,6 +92,9 @@ public class Player : Entity
     protected override void Start()
     {
        base.Start();
+        defaultMoveSpeed = moveSpeed;
+        defaultJumpForce = jumpForce;
+        defaultDashSpeed = dashSpeed;
         skill=SkillManager.instance;
         stateMachine.Initialize(idleState);//设置初始当前currentState
     }

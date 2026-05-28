@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class CharacterStats : MonoBehaviour
 {
+
+    private EntityFX fx;
     [Header("主要状态属性")]
     public Stats strength;//力量 ，每增加一点力量增加一点暴击伤害，增加一点基础伤害
     public Stats agility;// 敏捷，每增加一点敏捷，增加一点暴击概率和闪避率
@@ -17,30 +19,81 @@ public class CharacterStats : MonoBehaviour
     public Stats maxHealth;
     public Stats evasion;//闪避
     public Stats armer;//护盾
+    public Stats magicResistance;
 
-    [Header("Magic stats")]
+
+    [Header("魔法伤害")]
     public Stats fireDamage;
     public Stats iceDamage;
     public Stats lightingDamage;
 
-    public bool isIgnited;
-    public bool isChilled;
-    public bool isShocked;
 
-   
 
+    //角色自己的异常状态
+    public bool isIgnited;//时间伤害
+    public bool isChilled;//造成的伤害降低为原来的80%
+    public bool isShocked;//敌人闪避的概率增加20%
+    public int ignitDamage;//收到的火烧伤害
+
+    //燃烧时间和燃烧时间间隔
+    private float ignitTimer;
+    private float chilledTimer;
+    private float shockedTimer;
+
+    [Header("异常状态时间")]
+    [SerializeField] private float ailmentDuration=4;
+    [Header("冰冻减速百分比")]
+    [SerializeField] private float slowPercentage;
+
+
+    private float iginiteDamageCoolDown=0.3f;
+    private float igniteDamageTimer;
 
 
 
     public int currentHealth;
 
+    public System.Action onHealthChanged;
+
 
    protected virtual void Start()
     {
-        currentHealth = maxHealth.GetValue();
+        currentHealth = GetMaxHealthValue();
         critPower.SetDefValue(150);
+        fx=GetComponentInChildren<EntityFX>();
     }
+    protected virtual void Update()
+    {
+        ignitTimer-= Time.deltaTime;
+        chilledTimer-= Time.deltaTime;
+        shockedTimer-= Time.deltaTime;
 
+        igniteDamageTimer-=Time.deltaTime;
+        if (ignitTimer < 0)
+        {
+            isIgnited = false;
+        }
+
+        if(chilledTimer<0)
+        {
+            isChilled = false;
+        }
+        if(shockedTimer<0)
+        {
+            isShocked = false;
+        }
+        if (igniteDamageTimer < 0&&isIgnited)
+        {
+            igniteDamageTimer = iginiteDamageCoolDown;
+            Debug.Log( "i m burn"+ignitDamage);
+            DecreaseHealth(ignitDamage);
+            if(currentHealth<0)
+            {
+                Die();
+            }
+        }
+    }
+    public void SetupIgniteDamage(int _Damage) => ignitDamage = _Damage;
     public void DoDamage(CharacterStats _target)
     {
         bool flowControl = CanAvoidAttack(_target);
@@ -48,22 +101,21 @@ public class CharacterStats : MonoBehaviour
         {
             return;
         }
+        DoMagicEf(_target);
+        int physicalDamage = DoPhysicalDamage(_target);
+        int magicDamage = DoMagicalDamage(_target);
+        int finalDamage=physicalDamage + magicDamage;
+        _target.TakeDamage(finalDamage);
 
-        int totolDamage = damage.GetValue() + strength.GetValue();
-        totolDamage-=armer.GetValue();
-        totolDamage = Mathf.Clamp(totolDamage, 0, int.MaxValue);
-        _target.TakeDamage(totolDamage);
-
-        if(CanCrit())
-        {
-            totolDamage = CalculateCriticalDamage(totolDamage);
-            
-        }
     }
 
     private  bool CanAvoidAttack(CharacterStats _target)
     {
         int totalEvasion = _target.evasion.GetValue() + _target.agility.GetValue();
+        if (isShocked)
+        {
+            totalEvasion += 20;
+        }
         if (Random.Range(0, 100) < totalEvasion)
         {
            
@@ -72,26 +124,152 @@ public class CharacterStats : MonoBehaviour
 
         return true;
     }
-    public virtual void DoMagicalDamage(CharacterStats  _targets)
+    public virtual int DoPhysicalDamage(CharacterStats _targets)
     {
+        int totolDamage = damage.GetValue() + strength.GetValue();
+
+        //处理暴击逻辑
+        if (CanCrit())
+        {
+            totolDamage = CalculateCriticalDamage(totolDamage);
+        }
+        //处理护盾逻辑
+        totolDamage -= _targets.armer.GetValue();
+        totolDamage = Mathf.Clamp(totolDamage, 0, int.MaxValue);
+        return totolDamage;
+    }
+    public virtual int DoMagicalDamage(CharacterStats  _targets)
+    {
+        int _fireDamage=fireDamage.GetValue();
+        int _iceDamage=iceDamage.GetValue();
+        int _lightingDamage=lightingDamage.GetValue();
+
+        int totolDamage=_fireDamage+_iceDamage+_lightingDamage+intelligence.GetValue();
+        totolDamage-=_targets.magicResistance.GetValue()+(_targets.intelligence.GetValue()*3);
+        totolDamage=Mathf.Clamp(totolDamage,0,int.MaxValue);
+
+        if(isChilled)
+        {
+            totolDamage = Mathf.RoundToInt(totolDamage * 0.8f);
+        }
+
+        return totolDamage;
+    }
+
+    public virtual void DoMagicEf(CharacterStats _targets)
+    {
+        int _fireDamage = fireDamage.GetValue();
+        int _iceDamage = iceDamage.GetValue();
+        int _lightingDamage = lightingDamage.GetValue();
+
+        if(Mathf.Max(_fireDamage,_iceDamage,_lightingDamage)<=0)
+        {
+            return;
+        }
+
+        bool canApplyIgnite = _fireDamage > _iceDamage && _fireDamage > _lightingDamage;
+        bool canApplyChill=_iceDamage>_fireDamage&&_iceDamage > _lightingDamage;
+        bool canApplyShock=_lightingDamage>_fireDamage && _lightingDamage>_iceDamage;
+        int igni=canApplyIgnite?1:0;
+        int chill=canApplyChill?1:0;
+        int shock=canApplyShock?1:0;
+        if((igni+chill+shock)==1)
+        {
+            _targets.ApplyAilments(canApplyIgnite, canApplyChill, canApplyShock);
+            if (canApplyIgnite)
+            {
+                _targets.SetupIgniteDamage(fireDamage.GetValue());
+            }
+
+            return;
+        }
+        
+      
+
+        while(!canApplyShock&&!canApplyIgnite&&!canApplyChill)
+        {
+            if(Random.value<0.5f&&_fireDamage>0)
+            {
+                canApplyIgnite=true;
+                if (canApplyIgnite)
+                {
+                    _targets.SetupIgniteDamage(fireDamage.GetValue());
+                }
+                _targets.ApplyAilments(canApplyIgnite, canApplyChill, canApplyShock);
+                return;
+            }
+            if(Random.value<0.5f&&_iceDamage>0)
+            {
+                canApplyChill=true;
+                _targets.ApplyAilments(canApplyIgnite, canApplyChill, canApplyShock);
+                return;
+            }
+            if(Random.value<0.5f&&_lightingDamage>0)
+            {
+                canApplyShock=true;
+                _targets.ApplyAilments(canApplyIgnite, canApplyChill, canApplyShock);
+                return;
+            }
+        }
+       
 
     }
 
     public void ApplyAilments(bool _ignite,bool _chill,bool _shock)
     {
+        if(isIgnited||isChilled||isShocked)
+        {
+            return;
+        }
 
+        if(_ignite)
+        {
+            ignitTimer = ailmentDuration;
+            Debug.Log("Burning!");
+
+            fx.IgniteFxFor(ailmentDuration);
+        }
+        if(_chill)
+        {
+            chilledTimer = ailmentDuration;
+            Debug.Log("i m chill player");
+            fx.ChillFxFor(ailmentDuration);
+            GetComponent<Entity>().SlowEntity(slowPercentage,ailmentDuration);
+        }
+        if(_shock)
+        {
+            shockedTimer = ailmentDuration;
+            Debug.Log("Burning!");
+            fx.ShockFxFor(ailmentDuration);
+        }
+
+        isIgnited = _ignite;
+        isChilled= _chill;
+        isShocked = _shock;
     }
 
     protected virtual void TakeDamage(int _damage)
     {
+        DecreaseHealth(_damage);
         currentHealth-=_damage;
         Debug.Log(_damage);
+
         if (currentHealth < 0)
         {
         
             Die();
         }
     }    
+    protected virtual void DecreaseHealth(int _Damage)
+    {
+        currentHealth -= _Damage;
+        if(onHealthChanged!=null)
+        {
+            onHealthChanged();
+        }
+    }
+
+
     protected virtual void Die()
     {
 
@@ -112,5 +290,9 @@ public class CharacterStats : MonoBehaviour
         float critDamage = _damage * totolCritPower;
 
         return Mathf.RoundToInt(critDamage);    
+    }
+    public int GetMaxHealthValue()
+    {
+        return maxHealth.GetValue()+vitality.GetValue()*5;
     }
 }

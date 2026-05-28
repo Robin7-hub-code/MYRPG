@@ -28,6 +28,21 @@ public class Enemy : Entity
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public string lastAnimBoolName { get; private set; }
   public EnemyStateMachine stateMachine { get; private set; }
+
+    public override void SlowEntity(float _slowPercentage, float _slowDuration)
+    {
+        base.SlowEntity(_slowPercentage, _slowDuration);
+        moveSpeed = moveSpeed*(1 - _slowPercentage);
+        anim.speed = anim.speed * (1 - _slowPercentage);
+        Invoke(nameof(ReturnDefaultSpeed), _slowDuration);
+    }
+
+    public override void ReturnDefaultSpeed()
+    {
+        base.ReturnDefaultSpeed();
+        moveSpeed=defaultMoveSpeed;
+    }
+
     public virtual void AssignLastAnimation(string _ani)
     {
         lastAnimBoolName = _ani;
