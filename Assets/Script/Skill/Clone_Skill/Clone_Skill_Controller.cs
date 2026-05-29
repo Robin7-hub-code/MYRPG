@@ -45,6 +45,7 @@ public class Clone_Skill_Controller : MonoBehaviour
         colorLossSpeed = _colorLossSpeed;
         canDuplicateClone= _canDuplicateClone;
         chaceToDupliacte = _chaceToDupliacte;
+        Debug.Log("i m set clone");
         FaceClosestTarget(); 
     }
     private void AnimationTrigger()
@@ -59,6 +60,7 @@ public class Clone_Skill_Controller : MonoBehaviour
             if (hit.GetComponent<Enemy>() != null)
             {
                 hit.GetComponent<Enemy>().DamageEf();
+                PlayerManager.instance.player.stats.DoDamage(hit.GetComponent<Enemy>().stats);
             }
             if (canDuplicateClone)
             {
@@ -74,11 +76,24 @@ public class Clone_Skill_Controller : MonoBehaviour
     }
     private void FaceClosestTarget()
     {
+        if(closet==null)
+        {
+            Debug.Log("没发现敌人");
+            if(faceDir!=PlayerManager.instance.player.faceDir)
+            {
+                transform.Rotate(0, 180, 0);
+                faceDir = -faceDir;
+            }
+        }
+
         if (closet != null)
         {
             if(transform.position.x>closet.position.x)
             {
+                Debug.Log("克隆体位置"+transform.position.x);
+                Debug.Log("最近敌人位置"+closet.position.x);
                 faceDir = -1;
+                Debug.Log("i m flipped");
                 transform.Rotate(0, 180, 0);
             }
         }

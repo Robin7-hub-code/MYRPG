@@ -175,6 +175,7 @@ public class Sword_Skiill_Controller : MonoBehaviour
     private void SwordSkillDamage(Enemy enemy)
     {
         enemy.DamageEf();
+        PlayerManager.instance.player.stats.DoDamage(enemy.stats);
         enemy.StartCoroutine("FreezeTimerFor", freezeTimeDuration);
     }
 
