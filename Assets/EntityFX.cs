@@ -70,16 +70,15 @@ public class EntityFX : MonoBehaviour
 
     private void ChillColorFx()
     {
-        Debug.Log(gameObject);
-        Debug.Log("chill blink");
+       
         if (sr.color != chillColor[0])
         {
-            Debug.Log("1");
+           
             sr.color = chillColor[0];
         }
         else
         {
-            Debug.Log("2");
+            
             sr.color = chillColor[1];
         }
     }

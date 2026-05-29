@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CharacterStats : MonoBehaviour
 {
-
+    private bool isDead=false;
     private EntityFX fx;
     [Header("主要状态属性")]
     public Stats strength;//力量 ，每增加一点力量增加一点暴击伤害，增加一点基础伤害
@@ -64,35 +64,41 @@ public class CharacterStats : MonoBehaviour
     }
     protected virtual void Update()
     {
-        ignitTimer-= Time.deltaTime;
-        chilledTimer-= Time.deltaTime;
-        shockedTimer-= Time.deltaTime;
+        ignitTimer -= Time.deltaTime;
+        chilledTimer -= Time.deltaTime;
+        shockedTimer -= Time.deltaTime;
 
-        igniteDamageTimer-=Time.deltaTime;
+        igniteDamageTimer -= Time.deltaTime;
         if (ignitTimer < 0)
         {
             isIgnited = false;
         }
 
-        if(chilledTimer<0)
+        if (chilledTimer < 0)
         {
             isChilled = false;
         }
-        if(shockedTimer<0)
+        if (shockedTimer < 0)
         {
             isShocked = false;
         }
-        if (igniteDamageTimer < 0&&isIgnited)
+        ApplyIgniteDamage();
+    }
+
+    private void ApplyIgniteDamage()
+    {
+        if (igniteDamageTimer < 0 && isIgnited)
         {
             igniteDamageTimer = iginiteDamageCoolDown;
-            Debug.Log( "i m burn"+ignitDamage);
+           
             DecreaseHealth(ignitDamage);
-            if(currentHealth<0)
+            if (currentHealth < 0&&!isDead)
             {
                 Die();
             }
         }
     }
+
     public void SetupIgniteDamage(int _Damage) => ignitDamage = _Damage;
     public void DoDamage(CharacterStats _target)
     {
@@ -102,10 +108,9 @@ public class CharacterStats : MonoBehaviour
             return;
         }
         DoMagicEf(_target);
-        int physicalDamage = DoPhysicalDamage(_target);
-        int magicDamage = DoMagicalDamage(_target);
-        int finalDamage=physicalDamage + magicDamage;
-        _target.TakeDamage(finalDamage);
+        DoPhysicalDamage(_target);
+        DoMagicalDamage(_target);
+        
 
     }
 
@@ -124,7 +129,7 @@ public class CharacterStats : MonoBehaviour
 
         return true;
     }
-    public virtual int DoPhysicalDamage(CharacterStats _targets)
+    public virtual void DoPhysicalDamage(CharacterStats _targets)
     {
         int totolDamage = damage.GetValue() + strength.GetValue();
 
@@ -136,9 +141,10 @@ public class CharacterStats : MonoBehaviour
         //处理护盾逻辑
         totolDamage -= _targets.armer.GetValue();
         totolDamage = Mathf.Clamp(totolDamage, 0, int.MaxValue);
-        return totolDamage;
+        _targets.TakeDamage(totolDamage);
+        
     }
-    public virtual int DoMagicalDamage(CharacterStats  _targets)
+    public virtual void DoMagicalDamage(CharacterStats  _targets)
     {
         int _fireDamage=fireDamage.GetValue();
         int _iceDamage=iceDamage.GetValue();
@@ -153,7 +159,7 @@ public class CharacterStats : MonoBehaviour
             totolDamage = Mathf.RoundToInt(totolDamage * 0.8f);
         }
 
-        return totolDamage;
+        _targets.TakeDamage(totolDamage);
     }
 
     public virtual void DoMagicEf(CharacterStats _targets)
@@ -225,21 +231,21 @@ public class CharacterStats : MonoBehaviour
         if(_ignite)
         {
             ignitTimer = ailmentDuration;
-            Debug.Log("Burning!");
+           
 
             fx.IgniteFxFor(ailmentDuration);
         }
         if(_chill)
         {
             chilledTimer = ailmentDuration;
-            Debug.Log("i m chill player");
+           
             fx.ChillFxFor(ailmentDuration);
             GetComponent<Entity>().SlowEntity(slowPercentage,ailmentDuration);
         }
         if(_shock)
         {
             shockedTimer = ailmentDuration;
-            Debug.Log("Burning!");
+           
             fx.ShockFxFor(ailmentDuration);
         }
 
@@ -252,7 +258,7 @@ public class CharacterStats : MonoBehaviour
     {
         DecreaseHealth(_damage);
         currentHealth-=_damage;
-        Debug.Log(_damage);
+        
 
         if (currentHealth < 0)
         {
@@ -272,7 +278,7 @@ public class CharacterStats : MonoBehaviour
 
     protected virtual void Die()
     {
-
+        isDead = true;
     }
 
     private bool CanCrit()

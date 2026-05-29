@@ -45,7 +45,7 @@ public class PlayerBlackHoleState : PlayerState
 
             if(!skillUsed)
             {
-                Debug.Log("i m using skill");
+              
                 player.skill.blackhole.CanUseSkill();
                 skillUsed = true;
             }

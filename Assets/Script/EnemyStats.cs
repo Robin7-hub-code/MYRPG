@@ -3,11 +3,13 @@ using UnityEngine;
 public class EnemyStats : CharacterStats
 {
     private Enemy enemy;
+    private ItemDrop myDrop;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
     {
         base.Start();
         enemy=GetComponent<Enemy>();    
+        myDrop=GetComponent<ItemDrop>();
     }
 
 
@@ -21,5 +23,6 @@ public class EnemyStats : CharacterStats
     {
         base.Die();
         enemy.Die();
+        myDrop.DropItem();
     }
 }

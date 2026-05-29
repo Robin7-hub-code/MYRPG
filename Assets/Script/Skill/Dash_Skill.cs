@@ -7,6 +7,6 @@ public class Dash_Skill : Skill
     {
         
         base.UseSkill();
-        Debug.Log("Dashing");
+       
     }
 }

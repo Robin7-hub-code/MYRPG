@@ -9,7 +9,12 @@ public class Stats
 
     public int GetValue()
     {
-        return baseValue;
+        int modifierDamage=0;
+        for (int i = 0; i < modifiers.Count; i++)
+        {
+            modifierDamage += modifiers[i];
+        }
+        return baseValue+modifierDamage;
     }
 
 
@@ -23,6 +28,6 @@ public class Stats
     }
     public void RemoveModifier(int modifier)
     {
-        modifiers.RemoveAt(modifier);
+        modifiers.Remove(modifier);
     }
 }

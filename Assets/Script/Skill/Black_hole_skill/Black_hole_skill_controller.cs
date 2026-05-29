@@ -74,7 +74,7 @@ public class Black_hole_skill_controller : MonoBehaviour
         CloneAttackLogic();
         if (canShrink)
         {
-            Debug.Log("I m shrink");
+           
             transform.localScale = Vector2.Lerp(transform.localScale, new Vector2(-1, -1), shrinkSpeed * Time.deltaTime);
             if (transform.localScale.x < 0)
             {
@@ -96,7 +96,7 @@ public class Black_hole_skill_controller : MonoBehaviour
         canAttack = true;
         cloneAttackReleased = true;
         canCreateHotKey = false;
-        Debug.Log("I m transparent");
+       
 
         if(playerCanDisapear)
         {

@@ -29,7 +29,7 @@ public class Black_Hole_key_Controller : MonoBehaviour
         
         if(Input.GetKeyDown(myHotKey))
         {
-            Debug.Log("I m add");
+           
             blackHole.AddEnemyTolist(enemyTrans);
             myText.color = Color.clear;
             sr.color = Color.clear;

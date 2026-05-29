@@ -124,12 +124,12 @@ public class Entity : MonoBehaviour
     {
         if (transparent)
         {
-            Debug.Log("transparent");
+           
             sr.color = Color.clear;
         }
         else
         {
-            Debug.Log("intransparent");
+         
             sr.color = Color.white;
         }
     }

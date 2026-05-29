@@ -57,8 +57,8 @@ public class Enemy : Entity
     {
         base.Update();
         stateMachine.currentState.Update();
-        if(isPlayerDetected())
-          Debug.Log(isPlayerDetected().collider.gameObject.name + "I see");
+       
+        
     }
     public virtual void FreezeTimer(bool _timeFrozen)
     {

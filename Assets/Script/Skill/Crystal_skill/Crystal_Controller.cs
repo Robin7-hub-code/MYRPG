@@ -76,8 +76,9 @@ public class Crystal_Controller : MonoBehaviour
         {
             if (hit.GetComponent<Enemy>() != null)
             {
-                hit.GetComponent<Enemy>().DamageEf();
-                PlayerManager.instance.player.stats.DoDamage(hit.GetComponent<Enemy>().stats);
+               
+                PlayerManager.instance.player.stats.DoMagicEf(hit.GetComponent<Enemy>().stats);
+                PlayerManager.instance.player.stats.DoMagicalDamage(hit.GetComponent<Enemy>().stats);
             }
         }
     }
