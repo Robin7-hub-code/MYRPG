@@ -27,7 +27,7 @@ public class HealthBar : MonoBehaviour
     private void UpdateHealthUI()
     {
         slider.maxValue = stats.GetMaxHealthValue();
-        slider.value = stats.currentHealth;
+        slider.value = Mathf.Clamp(stats.currentHealth,0,stats.GetMaxHealthValue());
     }
 
     private void OnDisable()

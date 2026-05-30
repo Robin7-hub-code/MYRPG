@@ -176,7 +176,8 @@ public class Sword_Skiill_Controller : MonoBehaviour
     {
         enemy.DamageEf();
         PlayerManager.instance.player.stats.DoDamage(enemy.stats);
-        enemy.StartCoroutine("FreezeTimerFor", freezeTimeDuration);
+        if(player.skill.sword.timeStopUnlocked)
+          enemy.StartCoroutine("FreezeTimerFor", freezeTimeDuration);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -273,8 +273,8 @@ public class CharacterStats : MonoBehaviour
     protected virtual void TakeDamage(int _damage)
     {
         DecreaseHealth(_damage);
-        currentHealth-=_damage;
-        
+        //Debug.Log("当前血量"+currentHealth);
+        //Debug.Log("当前伤害"+_damage);
 
         if (currentHealth < 0)
         {
@@ -285,6 +285,16 @@ public class CharacterStats : MonoBehaviour
     protected virtual void DecreaseHealth(int _Damage)
     {
         currentHealth -= _Damage;
+        Debug.Log("De" + _Damage);
+        if(onHealthChanged!=null)
+        {
+            onHealthChanged();
+        }
+    }
+    public virtual void IncreaseHealth(int _Damage)
+    {
+        Debug.Log("Increase" + _Damage);
+        currentHealth += _Damage;
         if(onHealthChanged!=null)
         {
             onHealthChanged();

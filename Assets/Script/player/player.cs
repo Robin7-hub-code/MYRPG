@@ -106,13 +106,21 @@ public class Player : Entity
         base.Update();
       stateMachine.currentState.Update();//调用当前状态的update方法
       CheckForDashInput();
-        if(Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F) && skill.crystal.crystalUnlocked) 
         {
             skill.crystal.CanUseSkill();
         }
     }
     private void CheckForDashInput()
     {
+        if(isWallDetected())
+        {
+            return;
+        }
+        if(skill.dash.dashUnlocked==false)
+        {
+            return;
+        }
         
         if(Input.GetKeyDown(KeyCode.LeftShift)&&SkillManager.instance.dash.CanUseSkill())
         {

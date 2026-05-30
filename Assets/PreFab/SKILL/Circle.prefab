@@ -107,7 +107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Black_hole_skill_controller
   targets: []
   HotkeyPreFab: {fileID: 4628878656977559418, guid: fa63b5827a66afa4898277b9af182077, type: 3}
-  KeyCodesList: 77000000650000006300000071000000
+  KeyCodesList: 7700000065000000740000006700000079000000
 --- !u!58 &4973828850144742607
 CircleCollider2D:
   m_ObjectHideFlags: 0

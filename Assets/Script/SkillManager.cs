@@ -11,6 +11,8 @@ public class SkillManager : MonoBehaviour
     public Black_hole_skill blackhole { get; private set; }
 
     public Crystal_skill crystal { get; private set; }
+
+    public PerrySkill perry { get; private set; }
     private void Awake()
     {
         if (instance != null)
@@ -30,5 +32,6 @@ public class SkillManager : MonoBehaviour
         sword = GetComponent<Sword_Skill>();
         blackhole  = GetComponent<Black_hole_skill>();
         crystal = GetComponent<Crystal_skill>();
+        perry = GetComponent<PerrySkill>();
     }
 }

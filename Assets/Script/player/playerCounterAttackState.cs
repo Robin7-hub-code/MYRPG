@@ -33,7 +33,10 @@ public class PlayerCounterAttackState : PlayerState
                 {
                      stateTimer = 10;
                      player.anim.SetBool("SucessfulCounterAttack", true);
-                    player.skill.clone.CreateCloneOnCounterAttack(hit.transform);
+
+                    player.skill.perry.MakeMirrageOnParry(hit.transform);
+                    // trigger parry skill effects (healing restore) and respect cooldown
+                    player.skill.perry.CanUseSkill();
                 }
 
             }

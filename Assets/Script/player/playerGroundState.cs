@@ -21,17 +21,17 @@ public class PlayerGroundState : PlayerState
     public override void Update()
     {
         base.Update();
-        if(Input.GetKeyDown(KeyCode.R))
+        if(Input.GetKeyDown(KeyCode.R)&&player.skill.blackhole.blackUnlocked)
         {
             stateMachine.ChangeState(player.blackHoleState);
             return;
         }
-        if(Input.GetKeyDown(KeyCode.Mouse1)&&HasNoSword())
+        if(Input.GetKeyDown(KeyCode.Mouse1)&&HasNoSword()&&player.skill.sword.swordUnlocked)
         {
             stateMachine.ChangeState(player.aimSwordState);
             return;
         }
-        if(Input.GetKeyDown(KeyCode.Q))
+        if(Input.GetKeyDown(KeyCode.Q)&&player.skill.perry.parryUnlocked)
         {
             stateMachine.ChangeState(player.counterAttack);
             return;
