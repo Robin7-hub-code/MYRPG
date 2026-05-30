@@ -10,7 +10,7 @@ public class ItemSlot_UI : MonoBehaviour,IPointerDownHandler
     [SerializeField] private Sprite defaultSprite;
     public InventoryItem item;
 
-
+  
     public void UpdateSlot(InventoryItem _item)
     {
         item=_item;
@@ -28,6 +28,7 @@ public class ItemSlot_UI : MonoBehaviour,IPointerDownHandler
                 itemText.text = string.Empty;
             }
         }
+        
     }
     public void ClearUpSlots()
     {
@@ -35,7 +36,7 @@ public class ItemSlot_UI : MonoBehaviour,IPointerDownHandler
         itemImage.color = Color.white;
         itemImage.sprite = defaultSprite;
         itemText.text = string.Empty;
-        
+      
     }
     public virtual void OnPointerDown(PointerEventData eventData)
     {

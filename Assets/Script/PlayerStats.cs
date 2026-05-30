@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 public class PlayerStats : CharacterStats
 {
     private Player player;
@@ -22,4 +23,6 @@ public class PlayerStats : CharacterStats
            player.Die();
         //player.rb.bodyType= RigidbodyType2D.Kinematic;
     }
+
+    
 }

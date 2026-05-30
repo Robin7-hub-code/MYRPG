@@ -70,6 +70,7 @@ public class ItemData_Equipment :ItemData
 
     public void RemoveModifiers()
     {
+        Debug.Log("i m remove");
         PlayerStats playerstats = PlayerManager.instance.player.GetComponent<PlayerStats>();
 
         playerstats.strength.RemoveModifier(strength);

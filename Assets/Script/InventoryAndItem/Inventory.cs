@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Inventory : MonoBehaviour
@@ -13,10 +14,12 @@ public class Inventory : MonoBehaviour
     [SerializeField] private Transform equipmentSlotParent;
     [SerializeField] private Transform materialSlotParent;
     [SerializeField] private Transform equipmentHaveEquiptSlotParent;
+    [SerializeField] private Transform statSlotParent;
 
     private ItemSlot_UI[] equipmentItemSlots;//所有装备插槽的ui
     private ItemSlot_UI[] materialItemSlots;//所有材料插槽的ui
     private EquipmentSlots_UI[] equipmentHaveEquipSlots;//已装备的插槽
+    private UI_Stats_slot[] uIStatsSlots;
     //private ItemSlot_UI[] equipmentHaveEquipSlots;
 
     public static Inventory Instance;//作为全局唯一的仓库实例
@@ -53,6 +56,7 @@ public class Inventory : MonoBehaviour
         equipmentItemSlots = equipmentSlotParent.GetComponentsInChildren<ItemSlot_UI>();
         materialItemSlots = materialSlotParent.GetComponentsInChildren<ItemSlot_UI>();
         equipmentHaveEquipSlots = equipmentHaveEquiptSlotParent.GetComponentsInChildren<EquipmentSlots_UI>();
+        uIStatsSlots = statSlotParent.GetComponentsInChildren<UI_Stats_slot>();
     }
     public void EquipItem(ItemData _item)
     {
@@ -91,6 +95,7 @@ public class Inventory : MonoBehaviour
         }
         if (equipmentHaveEquipDictionary.TryGetValue(itemToDel, out InventoryItem value))
         {
+            itemToDel.RemoveModifiers();
             equipmentHaveEquipItems.Remove(value);
             equipmentHaveEquipDictionary.Remove(itemToDel);
         }
@@ -171,6 +176,11 @@ public class Inventory : MonoBehaviour
         for (int i = 0; i < materialItems.Count; i++)
         {
             materialItemSlots[i].UpdateSlot(materialItems[i]);
+        }
+
+        for(int i=0;i<uIStatsSlots.Length;i++)
+        {
+            uIStatsSlots[i].UpdateStatValueUI();
         }
     }
     public void RemoveItem(ItemData item)
